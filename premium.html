@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carlos Tapas Bar | Albstadt (Premium Gold Edition)</title>
+    <style>
+        :root {
+            --primary: #8b0000;
+            --gold: #d4af37;
+            --gold-light: #f39c12;
+            --gold-gradient: linear-gradient(135deg, #f39c12, #d4af37, #9a7d0a);
+            --bg: #030303;
+            --card-bg: rgba(18, 18, 18, 0.85);
+            --font-main: 'Georgia', serif; 
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg); color: #fff; font-family: var(--font-sans); line-height: 1.8; overflow-x: hidden; }
+
+        header {
+            position: fixed; top: 0; width: 100%;
+            background: rgba(3, 3, 3, 0.9); backdrop-filter: blur(15px);
+            z-index: 1000; border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+        .nav-container {
+            max-width: 1200px; margin: 0 auto; display: flex;
+            justify-content: space-between; align-items: center; padding: 1.2rem 2rem;
+        }
+        .logo { 
+            font-family: var(--font-main); font-size: 1.7rem; font-weight: bold;
+            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-decoration: none; letter-spacing: 1px;
+        }
+        .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
+        .nav-links a { color: #fff; text-decoration: none; font-size: 0.95rem; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--gold); }
+        
+        .admin-login-btn {
+            border: 1px solid var(--gold); padding: 7px 20px; color: var(--gold) !important;
+            border-radius: 25px; font-weight: bold; transition: all 0.4s ease; cursor: pointer;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+            position: relative; overflow: hidden;
+        }
+        .admin-login-btn:hover { background: var(--gold); color: #000 !important; box-shadow: 0 0 20px rgba(212, 175, 55, 0.8); }
+
+        .hero {
+            height: 100vh; position: relative;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(3,3,3,1)), 
+                        url('https://cdn.website.dish.co/media/51/9b/9201510/sandro-fotografie-42-jpg.jpg') center/cover fixed no-repeat;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            padding: 0 1rem; overflow: hidden;
+        }
+        #particles-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .hero-content { z-index: 2; position: relative; }
+        .hero h1 { 
+            font-family: var(--font-main); font-size: 5.5rem; letter-spacing: -2px; margin-bottom: 0.5rem; 
+            text-shadow: 0 10px 30px rgba(0,0,0,0.9); animation: pulseGlow 4s infinite alternate;
+        }
+        .hero p { font-size: 1.7rem; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-style: italic; font-weight: bold; }
+
+        .cta-btn {
+            display: inline-block; padding: 1.2rem 3.5rem; background: transparent; 
+            border: 2px solid var(--gold); color: var(--gold); text-decoration: none;
+            font-weight: bold; text-transform: uppercase; letter-spacing: 2px;
+            transition: all 0.4s ease; cursor: pointer; border-radius: 4px;
+            position: relative; overflow: hidden; box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+        .cta-btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.7s;
+        }
+        .cta-btn:hover::before { left: 100%; }
+        .cta-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 30px rgba(212, 175, 55, 0.9); transform: translateY(-3px); }
+
+        .story { padding: 8rem 2rem 4rem 2rem; max-width: 900px; margin: 0 auto; text-align: center; }
+        .story h2 { font-family: var(--font-main); font-size: 3.5rem; margin-bottom: 2rem; color: var(--gold); text-shadow: 0 0 20px rgba(212,175,55,0.2); }
+        .story p { font-size: 1.3rem; color: #ccc; }
+
+        .gallery-container { text-align: center; padding: 2rem 0; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; max-width: 1400px; margin: 0 auto; padding: 0 20px; }
+        .img-wrap { 
+            height: 420px; overflow: hidden; position: relative; cursor: pointer; 
+            border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9); transition: all 0.5s ease;
+        }
+        .img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
+        .img-wrap:hover { border-color: var(--gold); box-shadow: 0 0 25px rgba(212, 175, 55, 0.5); transform: translateY(-8px); }
+        .img-wrap:hover img { transform: scale(1.12); }
+        .img-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 1.8rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.95));
+            color: var(--gold); font-family: var(--font-main); font-size: 1.3rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .info-section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 3rem; }
+        .info-card { 
+            background: var(--card-bg); padding: 2.5rem; border-radius: 8px; 
+            border: 1px solid rgba(212, 175, 55, 0.25); border-top: 4px solid var(--gold); 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+        .info-card:hover { transform: translateY(-5px); border-color: var(--gold); }
+        .info-card h3 { font-family: var(--font-main); color: var(--gold); font-size: 1.9rem; margin-bottom: 1.5rem; }
+
+        .reservation-section { padding: 6rem 2rem; max-width: 850px; margin: 0 auto; text-align: center; }
+        form { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 2rem; text-align: left; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+        
+        label { font-size: 0.85rem; color: var(--gold); margin-bottom: 4px; display: block; font-weight: 600; }
+        input, select, textarea {
+            width: 100%; padding: 1rem; background: #0d0d0d; border: 1px solid #333; color: #fff;
+            border-radius: 4px; font-family: inherit; font-size: 1rem; transition: border-color 0.3s;
+            cursor: pointer;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.3); }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); backdrop-filter: blur(12px); z-index: 2000;
+            justify-content: center; align-items: center; padding: 1rem;
+        }
+        .modal-box {
+            background: #0d0d0d; border: 1px solid var(--gold); padding: 2.5rem; border-radius: 8px;
+            max-width: 850px; width: 100%; max-height: 85vh; overflow-y: auto; position: relative;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.95);
+        }
+
+        .admin-modal-box {
+            max-width: 1600px !important; width: 95% !important; height: 90vh !important;
+            display: flex; flex-direction: column; padding: 1.5rem !important; overflow: hidden !important;
+        }
+        .admin-dashboard-grid {
+            display: grid; grid-template-columns: 320px 1fr; gap: 2rem; flex: 1; overflow: hidden; margin-top: 1rem;
+        }
+        .admin-left-col {
+            background: #111; padding: 1.5rem; border-radius: 8px; border: 1px solid rgba(212,175,55,0.2); 
+            overflow-y: auto;
+        }
+        .admin-right-col {
+            overflow-y: auto; padding-right: 10px;
+        }
+        
+        @media (max-width: 900px) {
+            .admin-dashboard-grid { grid-template-columns: 1fr; }
+            .admin-left-col { overflow-y: visible; }
+        }
+
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 2.2rem; color: var(--gold); cursor: pointer; background: none; border: none; }
+        .modal-header-img { width: 100%; height: 250px; object-fit: cover; border-radius: 6px; margin-bottom: 1.5rem; border: 1px solid rgba(212,175,55,0.3); }
+
+        .res-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.85rem; }
+        .res-table th, .res-table td { padding: 12px 10px; border-bottom: 1px solid #222; text-align: left; }
+        .res-table th { color: var(--gold); font-family: var(--font-main); }
+        .delete-btn { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 1.2rem; transition: transform 0.2s; }
+        .delete-btn:hover { transform: scale(1.2); }
+
+        .fade-in { opacity: 0; transform: translateY(40px); transition: all 1.2s ease-out; }
+        .visible { opacity: 1; transform: translateY(0); }
+
+        @keyframes pulseGlow {
+            0% { text-shadow: 0 0 10px rgba(212,175,55,0.2); }
+            100% { text-shadow: 0 0 25px rgba(212,175,55,0.6); }
+        }
+
+        footer { text-align: center; padding: 3rem 1rem; border-top: 1px solid #1a1a1a; color: #666; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo">Carlos Tapas Bar</a>
+            <ul class="nav-links">
+                <li><a href="#about">Über Uns</a></li>
+                <li><a href="#gallery">Impressionen</a></li>
+                <li><a href="#info">Zeiten & Kontakt</a></li>
+                <li><a href="#reservieren">Reservieren</a></li>
+                <li><a href="#" class="admin-login-btn" onclick="openAdminModal()">Admin Login</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <section class="hero">
+        <canvas id="particles-canvas"></canvas>
+        <div class="hero-content">
+            <h1>Carlos Tapas Bar</h1>
+            <p>Spanische Lebensfreude. Direkt im Hof 14.</p>
+            <a href="#reservieren" class="cta-btn" style="margin-top: 2.5rem;">Tisch sichern</a>
+        </div>
+    </section>
+
+    <section class="story fade-in" id="about">
+        <h2>Die Seele vom Hof 14</h2>
+        <p>Bei Carlos Tapas Bar ist Essen nicht nur Nahrungsaufnahme – es ist eine Umarmung. Seit Jahren bringen wir das sonnige Lebensgefühl Spaniens in das Herz von Albstadt. Von den handverlesenen Oliven bis zum perfekt gegrillten Gamba: Wir kochen mit Hingabe, damit du für einen Abend den Alltag vergessen und den Moment genießen kannst.</p>
+    </section>
+
+    <section class="gallery-container fade-in" id="gallery">
+        <p style="color: var(--gold); margin-bottom: 1.5rem; font-style: italic; letter-spacing: 1px;">Klicke auf ein Bild, um tiefere Einblicke zu erhalten</p>
+        <div class="gallery-grid">
+            <div class="img-wrap" onclick="openPanel('tapas')">
+                <img id="img-tapas" src="https://img2.boatcdn.com/review_img/c21b9b7679be93640cbaad2442d6729a" alt="Tapas">
+                <div class="img-overlay"><span>Authentische Tapas</span> <span>➔</span></div>
+            </div>
+            <div class="img-wrap" onclick="openPanel('location')">
+                <img id="img-location" src="https://cdn.website.dish.co/media/0f/1f/2204643/Carlos-Tapas-Bar-WP-20130830-002.jpg" alt="Atmosphäre">
+                <div class="img-overlay"><span>Der historische Hof 14</span> <span>➔</span></div>
+            </div>
+            <div class="img-wrap" onclick="openPanel('bar')">
+                <img id="img-bar" src="https://cdn.website.dish.co/media/a1/5a/9201515/sandro-fotografie-52-jpg.jpg" alt="Bar">
+                <div class="img-overlay"><span>Spanische Weine & Bar</span> <span>➔</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="info-section fade-in" id="info">
+        <div class="info-card">
+            <h3>Öffnungszeiten</h3>
+            <p><strong>Montag – Donnerstag:</strong> 17:00 – 22:00 Uhr</p>
+            <p><strong>Freitag – Samstag:</strong> 17:00 – 23:00 Uhr</p>
+            <p><strong>Sonntag:</strong> Ruhetag</p>
+        </div>
+        <div class="info-card">
+            <h3>Kontakt & Adresse</h3>
+            <p><strong>Carlos Tapas Bar</strong></p>
+            <p>Im Hof 14, 72458 Albstadt</p><br>
+            <p><strong>Telefon:</strong> +49 7431 934354</p>
+            <p><strong>E-Mail:</strong> carlos-albstadt@t-online.de</p><br>
+            <p style="font-size: 0.85rem; color: #888;">EC-Karte, VISA, MasterCard & Barzahlung möglich.</p>
+        </div>
+    </section>
+
+    <section class="reservation-section fade-in" id="reservieren">
+        <h2 style="font-family: var(--font-main); font-size: 3.2rem; color: var(--gold);">Tisch Reservieren</h2>
+        <p style="color: #bbb;">Sichere dir deinen Platz im Hof 14 für einen unvergesslichen Abend. <br><small style="color:var(--gold);">Hinweis: Die max. Verweildauer pro Tisch beträgt 90 Minuten.</small></p>
+        
+        <form onsubmit="handleReservation(event)">
+            <div style="display:none !important;"><input type="text" id="res_website_hp" name="website_hp" tabindex="-1" autocomplete="off"></div>
+
+            <div class="form-row">
+                <div><label for="res_name">Name *</label><input type="text" id="res_name" placeholder="Ihr Name" required></div>
+                <div><label for="res_email">E-Mail *</label><input type="email" id="res_email" placeholder="ihre@email.de" required></div>
+            </div>
+
+            <div class="form-row">
+                <div><label for="res_phone">Telefonnummer *</label><input type="tel" id="res_phone" placeholder="Für eventuelle Rückfragen" required></div>
+                <div><label for="res_guests">Personen *</label>
+                    <select id="res_guests" required>
+                        <option value="2 Personen">2 Personen</option><option value="3 Personen">3 Personen</option>
+                        <option value="4 Personen">4 Personen</option><option value="5 Personen">5 Personen</option>
+                        <option value="6 Personen">6 Personen</option><option value="7+ Personen">7+ Personen (Gruppe)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="res_date">Datum *</label>
+                    <input type="date" id="res_date" onchange="updateAvailableTimes()" onclick="this.showPicker && this.showPicker()" required>
+                </div>
+                <div><label for="res_time">Uhrzeit *</label><select id="res_time" onchange="updateAvailableTables()" required><option value="">Bitte zuerst Datum wählen...</option></select></div>
+            </div>
+
+            <div><label for="res_table">Wunsch-Tisch (Optional)</label><select id="res_table"><option value="">Beliebiger Tisch (Keine Präferenz)</option></select></div>
+            <div><label for="res_notes">Anmerkung (Optional)</label><textarea id="res_notes" rows="2" placeholder="Besondere Wünsche, Allergien oder Anlässe..."></textarea></div>
+
+            <div style="font-size: 0.85rem; color: #888;">
+                <input type="checkbox" id="privacy" required style="width: auto; margin-right: 8px;">
+                Ich stimme zu, dass meine Daten zur Reservierungsbearbeitung gespeichert werden.
+            </div>
+            <button type="submit" class="cta-btn" style="width: 100%;">Tisch Verbindlich Anfragen</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; Carlos Tapas Bar Albstadt | Inhaber: Jens Olaf Arnold</p>
+        <p style="margin-top: 10px;">
+            <a href="#" onclick="openLegal('impressum')" style="color: var(--gold); margin-right: 15px;">Impressum</a>
+            <a href="#" onclick="openLegal('datenschutz')" style="color: var(--gold);">Datenschutz</a>
+        </p>
+    </footer>
+
+    <!-- MODALS -->
+    <div id="imagePanelModal" class="modal">
+        <div class="modal-box">
+            <button class="close-btn" onclick="closeModal('imagePanelModal')">&times;</button>
+            <img id="panelImg" class="modal-header-img" src="" alt="Popup Bild">
+            <h2 id="panelTitle" style="font-family: var(--font-main); color: var(--gold); margin-bottom: 1rem;"></h2>
+            <div id="panelContent" style="color: #ccc; line-height: 1.8;"></div>
+        </div>
+    </div>
+
+    <!-- ADMIN TERMINAL -->
+    <div id="adminModal" class="modal">
+        <div class="modal-box admin-modal-box" id="adminModalBoxContainer">
+            <button class="close-btn" onclick="closeModal('adminModal')">&times;</button>
+            
+            <div id="adminLoginView" style="max-width: 400px; margin: auto; text-align: center; padding-top: 2rem;">
+                <h2 style="font-family: var(--font-main); color: var(--gold); margin-bottom: 1rem;">Personal-Terminal Login</h2>
+                <p style="color: #888; margin-bottom: 1.5rem; font-size: 0.9rem;">Bitte PIN eingeben und Sicherheitsfrage lösen (Schutz vor Bots).</p>
+                
+                <form onsubmit="event.preventDefault(); loginAdmin();" style="display: flex; flex-direction: column; gap: 1rem; text-align: left;">
+                    <div>
+                        <label style="font-size: 0.75rem;">Admin PIN (Demo: admin)</label>
+                        <input type="password" id="adminPassword" placeholder="PIN eingeben..." required style="text-align: center;">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.75rem;" id="botQuestionLabel">Sicherheitsfrage</label>
+                        <input type="number" id="botAnswerInput" placeholder="Ergebnis..." required style="text-align: center;">
+                    </div>
+                    <button type="submit" class="cta-btn" style="width: 100%; margin-top: 0.5rem; padding: 1rem;">Sicher Einloggen</button>
+                </form>
+            </div>
+
+            <div id="adminDashboardView" style="display: none; height: 100%; display: none; flex-direction: column;">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+                    <h2 style="font-family: var(--font-main); color: var(--gold); margin:0;">Terminal: Reservierungs-Manager</h2>
+                    
+                    <!-- Kalender-Picker mit sofortigem Öffnen via showPicker() -->
+                    <div style="display: flex; gap: 8px; align-items: center; background: #151515; padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(212,175,55,0.2);">
+                        <label style="color: var(--gold); margin: 0; font-size: 0.75rem;">📅 Tag:</label>
+                        <input type="date" id="adminFilterDate" onchange="renderReservations()" onclick="this.showPicker && this.showPicker()" style="padding: 3px 6px; width: 140px; font-size: 0.8rem; background:#000; color:#fff; border:1px solid #444; cursor: pointer;">
+                        <button type="button" class="cta-btn" onclick="setTodayFilter()" style="padding: 3px 10px; font-size: 0.7rem;">Heute</button>
+                        <button type="button" class="cta-btn" onclick="setTomorrowFilter()" style="padding: 3px 10px; font-size: 0.7rem;">Morgen</button>
+                    </div>
+
+                    <button class="cta-btn" onclick="logoutAdmin()" style="padding: 5px 15px; font-size: 0.7rem; border-color: #555; color:#ccc;">Ausloggen</button>
+                </div>
+
+                <div class="admin-dashboard-grid">
+                    
+                    <!-- LINKE SPALTE: Schnelleingabe -->
+                    <div class="admin-left-col">
+                        <h4 style="color: var(--gold); margin-bottom: 15px; font-size: 1.1rem; border-bottom: 1px dashed var(--gold); padding-bottom: 5px;">📞 Neue Eingabe (Telefon)</h4>
+                        <form onsubmit="handleAdminManualEntry(event)" style="display: flex; flex-direction: column; gap: 12px; margin-top: 0;">
+                            <div>
+                                <label style="font-size: 0.75rem;">Gast Name</label>
+                                <input type="text" id="admin_res_name" placeholder="Name eintragen" required style="padding: 8px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem;">Telefonnummer</label>
+                                <input type="tel" id="admin_res_phone" placeholder="Telefonnummer" required style="padding: 8px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem;">Datum</label>
+                                <input type="date" id="admin_res_date" onchange="updateAdminAvailableTables()" onclick="this.showPicker && this.showPicker()" required style="padding: 8px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem;">Uhrzeit</label>
+                                <input type="time" id="admin_res_time" onchange="updateAdminAvailableTables()" required style="padding: 8px;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem;">Personenanzahl</label>
+                                <select id="admin_res_guests" required style="padding: 8px;">
+                                    <option value="2 Personen">2 Personen</option><option value="3 Personen">3 Personen</option>
+                                    <option value="4 Personen">4 Personen</option><option value="5 Personen">5 Personen</option>
+                                    <option value="6 Personen">6 Personen</option><option value="7+ Personen">7+ Personen</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem;">Tischnummer</label>
+                                <select id="admin_res_table" style="padding: 8px;" required>
+                                    <option value="">Bitte zuerst Datum & Zeit wählen...</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="cta-btn" style="padding: 10px; font-size: 0.9rem; margin-top: 10px;">Speichern & Hinzufügen</button>
+                        </form>
+                    </div>
+
+                    <!-- RECHTE SPALTE: Übersicht & Tisch-Raster -->
+                    <div class="admin-right-col">
+                        <div id="tableGridContainer"></div>
+
+                        <h4 style="color: var(--gold); margin: 1.5rem 0 10px 0; border-bottom: 1px solid #333; padding-bottom: 5px;" id="tableListHeader">📋 Reservierungen</h4>
+                        <div style="overflow-x: auto;">
+                            <table class="res-table">
+                                <thead>
+                                    <tr>
+                                        <th>Uhrzeit</th>
+                                        <th>Gast Name & Kontakt</th>
+                                        <th>Gäste</th>
+                                        <th>Tischnr.</th>
+                                        <th>Status / 15-Min-Check</th>
+                                        <th>Aktion</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reservationTableBody">
+                                    <!-- Wird per JS befüllt -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECHTSTEXTE -->
+    <div id="legalModal" class="modal">
+        <div class="modal-box">
+            <button class="close-btn" onclick="closeModal('legalModal')">&times;</button>
+            <div id="legalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        function sanitizeInput(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(m) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'}[m]; });
+        }
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.onkeydown = function(e) { if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0)))) return false; };
+
+        // Partikel
+        const canvas = document.getElementById('particles-canvas'); const ctx = canvas.getContext('2d'); let particles = [];
+        function resizeCanvas() { if(canvas){canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight;} }
+        window.addEventListener('resize', resizeCanvas); resizeCanvas();
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1; this.speedX = (Math.random() - 0.5) * 0.8; this.speedY = (Math.random() - 0.5) * 0.8;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1; if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() { ctx.fillStyle = `rgba(212, 175, 55, ${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+        for (let i = 0; i < 60; i++) particles.push(new Particle());
+        function animateParticles() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateParticles); }
+        animateParticles();
+
+        const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); });
+        document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el));
+
+        // DATEN-MANAGEMENT
+        const DEFAULT_RESERVATIONS = [
+            { id: 1, date: "2026-08-17", time: "19:00 Uhr", name: "Carina T.", guests: "4 Personen", contact: "carina@web.de / Tel: 0171-123456", table: "Tisch 4" },
+            { id: 2, date: "2026-08-22", time: "20:00 Uhr", name: "Helmut M.", guests: "2 Personen", contact: "0172-938482", table: "Tisch 12" }
+        ];
+
+        function getStoredReservations() {
+            const stored = localStorage.getItem('carlos_reservations');
+            if (!stored) { localStorage.setItem('carlos_reservations', JSON.stringify(DEFAULT_RESERVATIONS)); return DEFAULT_RESERVATIONS; }
+            return JSON.parse(stored);
+        }
+        function saveReservations(data) { localStorage.setItem('carlos_reservations', JSON.stringify(data)); renderReservations(); }
+        window.addEventListener('storage', (event) => { if (event.key === 'carlos_reservations') renderReservations(); });
+
+        // DATUM & UHRZEIT (Kunde)
+        const resDateElem = document.getElementById('res_date'); if (resDateElem) resDateElem.min = new Date().toISOString().split('T')[0];
+        const adminResDateElem = document.getElementById('admin_res_date'); if (adminResDateElem) adminResDateElem.min = new Date().toISOString().split('T')[0];
+
+        function updateAvailableTimes() {
+            const dateInput = document.getElementById('res_date').value; const timeSelect = document.getElementById('res_time'); const tableSelect = document.getElementById('res_table');
+            tableSelect.innerHTML = '<option value="">Bitte zuerst Datum & Uhrzeit wählen...</option>';
+            if (!dateInput) return;
+            
+            const selectedDate = new Date(dateInput);
+            const dayOfWeek = selectedDate.getDay(); 
+            timeSelect.innerHTML = '';
+
+            if (dayOfWeek === 0) {
+                alert("Sonntags haben wir Ruhetag. Bitte wählen Sie einen anderen Tag (Mo–Sa).");
+                document.getElementById('res_date').value = '';
+                timeSelect.innerHTML = '<option value="">Sonntag ist Ruhetag</option>';
+                return;
+            }
+
+            let availableSlots = ["17:00 Uhr", "17:30 Uhr", "18:00 Uhr", "18:30 Uhr", "19:00 Uhr", "19:30 Uhr", "20:00 Uhr", "20:30 Uhr", "21:00 Uhr"];
+
+            timeSelect.innerHTML = '<option value="">Wunschzeit wählen...</option>';
+            availableSlots.forEach(time => {
+                const opt = document.createElement('option');
+                opt.value = time; opt.textContent = time;
+                timeSelect.appendChild(opt);
+            });
+        }
+
+        function updateAvailableTables() {
+            const date = document.getElementById('res_date').value; const time = document.getElementById('res_time').value; const tableSelect = document.getElementById('res_table');
+            tableSelect.innerHTML = '<option value="">Beliebiger Tisch (Keine Präferenz)</option>';
+            if (!date || !time) return;
+            const currentData = getStoredReservations();
+            
+            const occupiedTables = currentData
+                .filter(r => r.date === date && r.time === time && r.table)
+                .map(r => r.table.toLowerCase().trim());
+
+            for (let i = 1; i <= 12; i++) {
+                let tName = `tisch ${i}`;
+                if (!occupiedTables.includes(tName)) {
+                    tableSelect.innerHTML += `<option value="Tisch ${i}">Tisch ${i}</option>`;
+                }
+            }
+        }
+
+        function updateAdminAvailableTables() {
+            const date = document.getElementById('admin_res_date').value; 
+            const timeRaw = document.getElementById('admin_res_time').value; 
+            const tableSelect = document.getElementById('admin_res_table');
+            
+            tableSelect.innerHTML = '<option value="">Bitte Tisch wählen...</option>';
+            if (!date || !timeRaw) return;
+            
+            const time = timeRaw + " Uhr";
+            const currentData = getStoredReservations();
+            const occupiedTables = currentData
+                .filter(r => r.date === date && r.time === time && r.table)
+                .map(r => r.table.toLowerCase().trim());
+            
+            let availableCount = 0;
+            for (let i = 1; i <= 12; i++) {
+                let tName = `tisch ${i}`;
+                if (!occupiedTables.includes(tName)) {
+                    tableSelect.innerHTML += `<option value="Tisch ${i}">Tisch ${i}</option>`;
+                    availableCount++;
+                }
+            }
+            if (availableCount === 0) {
+                tableSelect.innerHTML = '<option value="">Kein Tisch frei für diese Uhrzeit!</option>';
+            }
+        }
+
+        // BOT-SCHUTZ LOGIK
+        let currentBotNum1 = 0; let currentBotNum2 = 0;
+        function generateBotQuestion() {
+            currentBotNum1 = Math.floor(Math.random() * 8) + 2;
+            currentBotNum2 = Math.floor(Math.random() * 8) + 2;
+            const label = document.getElementById('botQuestionLabel');
+            if (label) label.innerText = `Sicherheits-Check: Was ist ${currentBotNum1} + ${currentBotNum2}?`;
+            const input = document.getElementById('botAnswerInput');
+            if (input) input.value = '';
+        }
+
+        let loginAttempts = 0; let isLockedOut = false;
+        function openAdminModal() { generateBotQuestion(); document.getElementById('adminModal').style.display = 'flex'; }
+
+        function loginAdmin() {
+            if (isLockedOut) { alert("Zu viele Fehlversuche. Das Terminal ist gesperrt."); return; }
+            const pw = document.getElementById('adminPassword').value;
+            const userAnswer = parseInt(document.getElementById('botAnswerInput').value, 10);
+            if (userAnswer !== (currentBotNum1 + currentBotNum2)) {
+                alert("Falsche Sicherheitsantwort!"); generateBotQuestion(); return;
+            }
+            if(pw === 'admin') {
+                loginAttempts = 0; document.getElementById('adminLoginView').style.display = 'none';
+                document.getElementById('adminDashboardView').style.display = 'flex';
+                document.getElementById('adminModalBoxContainer').style.maxWidth = '1600px';
+                
+                const today = new Date().toISOString().split('T')[0];
+                const filterDateElem = document.getElementById('adminFilterDate');
+                if(filterDateElem) filterDateElem.value = today;
+
+                renderReservations();
+            } else {
+                loginAttempts++; generateBotQuestion();
+                if (loginAttempts >= 3) { isLockedOut = true; alert("Gesperrt für 60s."); setTimeout(() => { loginAttempts = 0; isLockedOut = false; }, 60000); }
+                else { alert(`Falsche PIN! Verbleibende Versuche: ${3 - loginAttempts}`); }
+            }
+        }
+
+        function logoutAdmin() {
+            document.getElementById('adminPassword').value = ''; document.getElementById('adminDashboardView').style.display = 'none';
+            document.getElementById('adminLoginView').style.display = 'block';
+            document.getElementById('adminModalBoxContainer').style.maxWidth = '850px'; closeModal('adminModal');
+        }
+
+        function formatDate(dateStr) { if(!dateStr) return ''; const [year, month, day] = dateStr.split('-'); return `${day}.${month}.${year}`; }
+
+        function setTodayFilter() {
+            const today = new Date().toISOString().split('T')[0];
+            const filterElem = document.getElementById('adminFilterDate');
+            if(filterElem) filterElem.value = today;
+            renderReservations();
+        }
+
+        function setTomorrowFilter() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+            const filterElem = document.getElementById('adminFilterDate');
+            if(filterElem) filterElem.value = tomorrowStr;
+            renderReservations();
+        }
+
+        // NO-SHOW LOGIK
+        function checkNoShowStatus(reservationDate, reservationTime) {
+            if (!reservationDate || !reservationTime) return "Aktiv";
+            const now = new Date();
+            const [hours, minutes] = reservationTime.replace(" Uhr", "").split(":");
+            const resDateTime = new Date(reservationDate);
+            resDateTime.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0);
+            const diffMinutes = (now - resDateTime) / (1000 * 60);
+
+            if (diffMinutes > 15 && diffMinutes <= 105) {
+                return '<span style="color: #e74c3c; font-weight: bold;">⚠️ No-Show (Nach 15 Min. freigegeben)</span>';
+            } else if (diffMinutes > 105) {
+                return '<span style="color: #7f8c8d;">Verstrichen (90 Min.)</span>';
+            }
+            return '<span style="color: #2ecc71; font-weight: bold;">🟢 Pünktlich / Wartend</span>';
+        }
+
+        function renderReservations() {
+            const tbody = document.getElementById('reservationTableBody'); if (!tbody) return;
+            
+            const filterDateElem = document.getElementById('adminFilterDate');
+            const selectedFilterDate = filterDateElem ? filterDateElem.value : new Date().toISOString().split('T')[0];
+
+            const currentData = getStoredReservations(); 
+            tbody.innerHTML = '';
+
+            const filteredData = currentData.filter(r => r.date === selectedFilterDate);
+            filteredData.sort((a, b) => a.time.localeCompare(b.time));
+
+            const totalGuestsCount = filteredData.reduce((sum, r) => {
+                const num = parseInt(r.guests) || 2;
+                return sum + num;
+            }, 0);
+            const listHeader = document.getElementById('tableListHeader');
+            if(listHeader) {
+                listHeader.innerHTML = `📋 Reservierungen für ${formatDate(selectedFilterDate)} <span style="font-size:0.8rem; color:var(--gold); font-weight:normal; margin-left:15px;">(${filteredData.length} Reservierungen | ca. ${totalGuestsCount} Gäste)</span>`;
+            }
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #777; padding: 2rem;">Keine Reservierungen für diesen Tag eingetragen.</td></tr>`;
+            } else {
+                filteredData.forEach((r) => {
+                    let statusHtml = checkNoShowStatus(r.date, r.time);
+                    
+                    let contactDisplay = r.contact;
+                    if (r.contact && r.contact.includes("Tel")) {
+                        let phonePart = r.contact.split("Tel:")[1] || r.contact;
+                        contactDisplay = `${r.contact.split("Tel:")[0]} <br><a href="tel:${phonePart.trim()}" style="color:var(--gold); text-decoration:none;">📞 ${phonePart.trim()}</a>`;
+                    } else if (r.contact && (r.contact.includes("Telefon") || r.contact.match(/^[0-9\-\+\s]+$/))) {
+                        contactDisplay = `<a href="tel:${r.contact}" style="color:var(--gold); text-decoration:none;">📞 ${r.contact}</a>`;
+                    }
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong style="color:var(--gold);">${r.time}</strong></td>
+                            <td><strong>${r.name}</strong><br><small style="color:#aaa;">${contactDisplay}</small></td>
+                            <td>${r.guests}</td>
+                            <td>
+                                <input type="text" value="${r.table || ''}" placeholder="Tisch?" 
+                                       onchange="updateTableNumber(${r.id}, this.value)" 
+                                       style="padding: 4px; width: 80px; font-size: 0.8rem; border: 1px solid var(--gold); background: #111; color: #fff;">
+                            </td>
+                            <td>${statusHtml}</td>
+                            <td style="text-align: center;">
+                                <button class="delete-btn" onclick="deleteReservation(${r.id})" title="Löschen">🗑️</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            renderTableStatusGrid(currentData, selectedFilterDate);
+        }
+
+        function deleteReservation(id) {
+            if(confirm("Möchtest du diese Reservierung wirklich löschen?")) {
+                let currentData = getStoredReservations();
+                currentData = currentData.filter(r => r.id !== id);
+                saveReservations(currentData);
+            }
+        }
+
+        function renderTableStatusGrid(data, filterDate) {
+            let gridContainer = document.getElementById('tableGridContainer');
+            
+            const occupiedEntries = data.filter(r => r.date === filterDate && r.table);
+            
+            let gridHTML = `<div style="padding: 1rem; border: 1px solid rgba(212,175,55,0.2); border-radius: 6px; background: #000;">
+                            <h4 style="color:var(--gold); margin-bottom: 0.8rem;">Live Belegungsplan (${formatDate(filterDate)}):</h4>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); gap: 8px;">`;
+            
+            for (let i = 1; i <= 12; i++) {
+                let tName = `tisch ${i}`;
+                let isOccupied = occupiedEntries.some(r => r.table.toLowerCase().trim() === tName);
+                
+                gridHTML += `
+                    <div style="padding: 8px 4px; text-align: center; border-radius: 4px; font-size: 0.75rem; font-weight: bold;
+                                background: ${isOccupied ? 'rgba(231,76,60,0.2)' : 'rgba(46,204,113,0.2)'};
+                                border: 1px solid ${isOccupied ? '#e74c3c' : '#2ecc71'}; color: ${isOccupied ? '#e74c3c' : '#2ecc71'};">
+                        Tisch ${i}<br><span style="font-size:0.65rem;">${isOccupied ? '🔴 Belegt' : '🟢 Frei'}</span>
+                    </div>`;
+            }
+            gridHTML += `</div></div>`;
+            gridContainer.innerHTML = gridHTML;
+        }
+
+        function updateTableNumber(id, newTable) {
+            if (newTable.trim() !== '') {
+                let currentData = getStoredReservations();
+                let targetRes = currentData.find(r => r.id === id);
+                let cleanNewTable = newTable.toLowerCase().trim();
+                
+                let conflict = currentData.some(r => r.date === targetRes.date && r.time === targetRes.time && r.table.toLowerCase().trim() === cleanNewTable && r.id !== id);
+                if (conflict) {
+                    alert(`Achtung: ${newTable} ist für den ${formatDate(targetRes.date)} um ${targetRes.time} bereits vergeben!`);
+                    renderReservations();
+                    return;
+                }
+            }
+            let currentData = getStoredReservations();
+            let index = currentData.findIndex(r => r.id === id);
+            if(index !== -1) { currentData[index].table = newTable; saveReservations(currentData); }
+        }
+
+        function handleAdminManualEntry(e) {
+            e.preventDefault();
+            const name = sanitizeInput(document.getElementById('admin_res_name').value);
+            const phone = sanitizeInput(document.getElementById('admin_res_phone').value);
+            const date = sanitizeInput(document.getElementById('admin_res_date').value);
+            const timeRaw = sanitizeInput(document.getElementById('admin_res_time').value);
+            const time = timeRaw + " Uhr"; 
+            const guests = sanitizeInput(document.getElementById('admin_res_guests').value);
+            const table = sanitizeInput(document.getElementById('admin_res_table').value);
+
+            let currentData = getStoredReservations();
+            if(table) {
+                let cleanTable = table.toLowerCase().trim();
+                let exists = currentData.some(r => r.date === date && r.time === time && r.table.toLowerCase().trim() === cleanTable);
+                if(exists) { alert(`Fehler: ${table} ist um ${time} bereits belegt!`); return; }
+            }
+
+            currentData.push({ 
+                id: Date.now(), 
+                date: date, 
+                time: time, 
+                name: name, 
+                guests: guests, 
+                contact: phone + " (Telefon)", 
+                table: table 
+            });
+            
+            saveReservations(currentData); 
+            e.target.reset();
+            document.getElementById('admin_res_table').innerHTML = '<option value="">Bitte zuerst Datum & Zeit wählen...</option>';
+            
+            document.getElementById('adminFilterDate').value = date;
+            renderReservations();
+            alert("Telefonische Reservierung erfolgreich eingetragen!");
+        }
+
+        function handleReservation(e) {
+            e.preventDefault();
+            if (document.getElementById('res_website_hp').value !== '') return false;
+            const name = sanitizeInput(document.getElementById('res_name').value); 
+            const email = sanitizeInput(document.getElementById('res_email').value);
+            const phone = sanitizeInput(document.getElementById('res_phone').value); 
+            const guests = sanitizeInput(document.getElementById('res_guests').value);
+            const date = sanitizeInput(document.getElementById('res_date').value); 
+            const time = sanitizeInput(document.getElementById('res_time').value);
+            const table = sanitizeInput(document.getElementById('res_table').value); 
+
+            let currentData = getStoredReservations();
+            if(table) {
+                let cleanTable = table.toLowerCase().trim();
+                let exists = currentData.some(r => r.date === date && r.time === time && r.table.toLowerCase().trim() === cleanTable);
+                if(exists) {
+                    alert("Dieser Tisch wurde soeben vergeben. Bitte wählen Sie einen anderen Tisch.");
+                    updateAvailableTables();
+                    return;
+                }
+            }
+
+            currentData.push({ 
+                id: Date.now(), 
+                date: date, 
+                time: time, 
+                name: name, 
+                guests: guests, 
+                contact: email + ' / Tel: ' + phone, 
+                table: table 
+            });
+            
+            saveReservations(currentData);
+            alert('Vielen Dank! Ihre Reservierungsanfrage (max. 90 Min.) wurde übermittelt.'); e.target.reset();
+            document.getElementById('res_time').innerHTML = '<option value="">Bitte zuerst Datum wählen...</option>';
+            document.getElementById('res_table').innerHTML = '<option value="">Beliebiger Tisch (Keine Präferenz)</option>';
+        }
+
+        function openPanel(type) {
+            const modal = document.getElementById('imagePanelModal'); const t = document.getElementById('panelTitle'), c = document.getElementById('panelContent'), img = document.getElementById('panelImg');
+            if(type === 'tapas') { img.src = document.getElementById('img-tapas').src; t.innerText = "Frische & Authentische Tapas"; c.innerHTML = "<p>Täglich aus frischen Zutaten zubereitet.</p>"; }
+            else if(type === 'location') { img.src = document.getElementById('img-location').src; t.innerText = "Das Besondere Etwas: Hof 14"; c.innerHTML = "<p>Der historische Innenhof bietet eine tolle Kulisse.</p>"; }
+            else if(type === 'bar') { img.src = document.getElementById('img-bar').src; t.innerText = "Wein, Bodega & Geselligkeit"; c.innerHTML = "<p>Spanische Weine und Cervezas.</p>"; }
+            modal.style.display = 'flex';
+        }
+        function closeModal(id) { 
+            document.getElementById(id).style.display = 'none'; 
+            if(id === 'adminModal') {
+                document.getElementById('adminDashboardView').style.display = 'none';
+                document.getElementById('adminLoginView').style.display = 'block';
+                document.getElementById('adminModalBoxContainer').style.maxWidth = '850px';
+            }
+        }
+        function openLegal(type) {
+            const modal = document.getElementById('legalModal'); const c = document.getElementById('legalContent');
+            if(type === 'impressum') c.innerHTML = `<h2 style="color:var(--gold)">Impressum</h2><br><p>Jens Olaf Arnold<br>Im Hof 14, 72458 Albstadt</p>`;
+            else c.innerHTML = `<h2 style="color:var(--gold)">Datenschutz</h2><br><p>Ihre Daten werden DSGVO-konform verarbeitet.</p>`;
+            modal.style.display = 'flex';
+        }
+        window.onclick = function(event) { if (event.target.classList.contains('modal')) closeModal(event.target.id); }
+    </script>
+</body>
+</html>
